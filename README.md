@@ -5,7 +5,8 @@ The _**WebGL-Samples**_ repository holds Open Sourced samples in WebGL for the W
 
 **Repository Committers** 
 
-* [Jonathan Feldstein](https://github.com/TBD)
+* [Jonathan Feldstein](https://github.com/jfeldste)
+* [Vadym Voznyuk](https://github.com/vvoznyuk)
 
 
 ## Bug Reporting and Feature Requests
