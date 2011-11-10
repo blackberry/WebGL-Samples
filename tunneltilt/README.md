@@ -49,10 +49,10 @@ http://creativecommons.org/licenses/by/3.0/
 7. Run: blackberry-tablet-sdk\bin\blackberry-deploy.bat
 
 ````
-    - installApp 
-    - password <PlayBookPassword> 
-    - device <PlayBookIP>
-    - package tunneltilt.bar
+    -installApp 
+    -password <PlayBookPassword> 
+    -device <PlayBookIP>
+    -package tunneltilt.bar
 ````
 
 ## Building for WebWorks (on Mac OS X):
@@ -73,8 +73,8 @@ http://creativecommons.org/licenses/by/3.0/
 7. Run: ./blackberry-tablet-sdk\bin\blackberry-deploy
 
 ````
-    - installApp 
-    - password <PlayBookPassword>
-    - device <PlayBookIP> 
-    - package tunneltilt.bar
+    -installApp 
+    -password <PlayBookPassword>
+    -device <PlayBookIP> 
+    -package tunneltilt.bar
 ````
