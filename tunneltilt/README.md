@@ -21,6 +21,7 @@ blackberry.custom.accelerometer
 * a folder that contains a WebWorks extension that provides JavaScript accelerometer helper functions
 
 blackberry.custom.audio
+
 * a folder that contains a WebWorks extension that provides JavaScript audio helper functions
 
 ## Music:
@@ -46,10 +47,11 @@ http://creativecommons.org/licenses/by/3.0/
 6. Run: bbwp.exe tunneltilt.zip -o .
 
 7. Run: blackberry-tablet-sdk\bin\blackberry-deploy.bat
-* installApp 
-* password PlayBookPassword 
-* device PlayBookIP 
-* package tunneltilt.bar
+
+    * installApp 
+    * password <PlayBookPassword> 
+    * device <PlayBookIP>
+    * package tunneltilt.bar
 
 
 ## Building for WebWorks (on Mac OS X):
@@ -68,7 +70,8 @@ http://creativecommons.org/licenses/by/3.0/
 6. Run: ./bbwp tunneltilt.zip -o .
 
 7. Run: ./blackberry-tablet-sdk\bin\blackberry-deploy
-* installApp 
-* password PlayBookPassword 
-* device PlayBookIP 
-* package tunneltilt.bar
+
+    * installApp 
+    * password <PlayBookPassword>
+    * device <PlayBookIP> 
+    * package tunneltilt.bar
