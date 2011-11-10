@@ -46,13 +46,10 @@ http://creativecommons.org/licenses/by/3.0/
 
 6. Run: bbwp.exe tunneltilt.zip -o .
 
-7. Run: blackberry-tablet-sdk\bin\blackberry-deploy.bat
+7. Run: 
 
 ````
-    -installApp 
-    -password <PlayBookPassword> 
-    -device <PlayBookIP>
-    -package tunneltilt.bar
+    blackberry-tablet-sdk\bin\blackberry-deploy.bat -installApp -password <PlayBookPassword> -device <PlayBookIP> -package tunneltilt.bar
 ````
 
 ## Building for WebWorks (on Mac OS X):
@@ -70,11 +67,8 @@ http://creativecommons.org/licenses/by/3.0/
 
 6. Run: ./bbwp tunneltilt.zip -o .
 
-7. Run: ./blackberry-tablet-sdk\bin\blackberry-deploy
+7. Run: 
 
 ````
-    -installApp 
-    -password <PlayBookPassword>
-    -device <PlayBookIP> 
-    -package tunneltilt.bar
+    ./blackberry-tablet-sdk\bin\blackberry-deploy -installApp -password <PlayBookPassword> -device <PlayBookIP> -package tunneltilt.bar
 ````
