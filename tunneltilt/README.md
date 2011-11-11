@@ -27,8 +27,11 @@ blackberry.custom.audio
 ## Music:
 
 Rocket - Kevin MacLeod (incompetech.com)
+
 ISRC: US-UAN-11-00568
+
 Licensed under Creative Commons "Attribution 3.0"
+
 http://creativecommons.org/licenses/by/3.0/
 
 ## Building for WebWorks (on Windows):
