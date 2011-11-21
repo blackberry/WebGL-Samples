@@ -16,6 +16,24 @@
 
 <html style="padding: 0; margin: 0">
 
+<style type="text/css">
+body {
+    background-color: #866d56;
+}
+
+.center {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+</style>
+
 <head>
 
 <!-- Note: this demo currently uses large point sprites which will not work in some browsers -->
@@ -217,7 +235,7 @@ function startGame() {
 function drawLoss() {
     var div = document.getElementById('info');
     if (div.style.display != 'block') {
-        div.innerHTML = '<img onclick="restart();" src="data/images/tap_to_restart.png">';
+        div.innerHTML = '<img class="center" onclick="restart();" src="data/images/tap_to_restart.png">';
         div.style.display = 'block';
         div.style.opacity = 0.7;
     }
@@ -229,7 +247,7 @@ function drawLoss() {
 function drawVictory() {
     var div = document.getElementById('info');
     if (div.style.display != 'block') {
-        div.innerHTML = '<img onclick="restart();" src="data/images/win.png">';
+        div.innerHTML = '<img class="center" onclick="restart();" src="data/images/win.png">';
         div.style.display = 'block';
         div.style.opacity = 0.7;
         GameInfo.levelNum++;
@@ -305,15 +323,15 @@ function tick() {
 
 </head>
 
-<body style="padding: 0; margin: 0">
-    <div id="info" style="position: absolute; width: 1024px; height: 512px; z-index: 1; display: none"></div>
-    <div id="intro" onclick="startGame();" style="position: absolute; width: 1024px; height: 512px; z-index: 1; display: none">
-        <img id="splashImg" src="data/images/splash.png">
-        <img id="progressbar" style="position: absolute; top: 475px; left: 500px;" src="data/images/progress_bar.gif">
-        <img id="tap_to_start" width="180px" style="position: absolute; top: 450px; left: 412px;" src="data/images/tap_to_start.png">
+<body style="text-align: center; min-width: 1024px; min-height: 600px">
+    <div id="info" class="center" style="width: 1024px; height: 600px; z-index: 1; display: none"></div>
+    <div id="intro" class="center" onclick="startGame();" style="border: 4px solid black; width: 1024px; height: 600px; z-index: 1; display: none">
+        <img id="splashImg" class="center" src="data/images/splash.png">
+        <img id="progressbar" class="center" style="top: 475px; left: 500px;" src="data/images/progress_bar.gif">
+        <img id="tap_to_start" class="center" width="180px" style="top: 350px; left: -20px;" src="data/images/tap_to_start.png">
     </div>
-    <div id="background" style="top: 0px; left: 0px; width: 1024px; height: 600px; background-color: black">
-        <canvas id="canvas" width="1024px" height="512px" style="margin-top: 44px; width: 1024px; height: 512px; border: none;"></canvas>
+    <div id="background" class="center" style="width: 1024; height: 600px; background-color: black">
+        <canvas id="canvas" class="center" width="1024px" height="512px" style="margin-top: 44px; width: 1024px; height: 512px; border: none;"></canvas>
     </div>
     <iframe onload="init();" id="shaders" src="shaders.html" style="display:none"></iframe>
 </body>
