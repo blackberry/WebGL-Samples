@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- Copyright (c) 2011 Research In Motion Limited.
+-
+- Licensed under the Apache License, Version 2.0 (the "License");
+- you may not use this file except in compliance with the License.
+- You may obtain a copy of the License at
+-
+- http://www.apache.org/licenses/LICENSE-2.0
+-
+- Unless required by applicable law or agreed to in writing, software
+- distributed under the License is distributed on an "AS IS" BASIS,
+- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- See the License for the specific language governing permissions and
+- limitations under the License.
+-->
+
+<library>
+	<extension id="blackberry.custom.audio">
+		<entryClass>blackberry.custom.audio.CustomAudio</entryClass>
+	</extension>
+	<platforms>
+		<platform value="AIR">
+			<target version="default" config="AIR_XHR" />
+		</platform>
+	</platforms>
+	
+	<configurations>
+		<configuration name="AIR_XHR" version="1.0" comment="For XHR architecture for implementation">
+			<src type="text/javascript" path="js/common/custom_audio_dispatcher.js" comment="Application JS XHR interface" />
+			<src type="text/javascript" path="js/common/custom_audio_ns.js" comment="Application JS interface" />
+			<src type="text/actionscript" path="src/Air/CustomAudio/src" comment="ActionScript implementation" />
+		</configuration>
+	</configurations>
+	<features>
+		<feature id="blackberry.custom.audio" version="1.0.0" />
+	</features>
+	<!-- 
+		Sample Usage to play a file:
+		
+		function playFile(filePath) {
+		  try {
+		    blackberry.custom.audio.playFile(filePath);
+		  } catch(e) {
+		    alert("Exception in customAudio: " + e);
+		  }
+		}
+	-->
+</library>

@@ -1,0 +1,321 @@
+<!--
+- Copyright (c) 2011 Research In Motion Limited.
+-
+- Licensed under the Apache License, Version 2.0 (the "License");
+- you may not use this file except in compliance with the License.
+- You may obtain a copy of the License at
+-
+- http://www.apache.org/licenses/LICENSE-2.0
+-
+- Unless required by applicable law or agreed to in writing, software
+- distributed under the License is distributed on an "AS IS" BASIS,
+- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- See the License for the specific language governing permissions and
+- limitations under the License.
+-->
+
+<html style="padding: 0; margin: 0">
+
+<head>
+
+<!-- Note: this demo currently uses large point sprites which will not work in some browsers -->
+
+<!-- JavaScript library includes-->
+<script type="text/javascript" src="gl-matrix/gl-matrix-min.js"></script>
+<script type="text/javascript" src="gl-utils.js"></script>
+<script type="text/javascript" src="events.js"></script>
+<script type="text/javascript" src="geometry.js"></script>
+<script type="text/javascript" src="sound.js"></script>
+<script type="text/javascript" src="loader.js"></script>
+
+<script id="main" type="text/javascript">
+
+GameInfo = function() {
+};
+
+// List of game states
+GameInfo.INTRO_STATE   = 0;
+GameInfo.PLAY_STATE    = 1;
+GameInfo.WIN1_STATE    = 2;
+GameInfo.WIN2_STATE    = 3;
+GameInfo.EXPLODE_STATE = 4;
+GameInfo.LOSE_STATE    = 5;
+
+// Time between passing the last wall and entering the light at the end of the tunnel.
+GameInfo.TIME_TO_WIN = 1000;
+
+// The current number of supported levels
+GameInfo.MAX_LEVEL_NUM = 5;
+
+// Static member variables
+GameInfo.state = GameInfo.INTRO_STATE;
+GameInfo.winTime = 0;
+GameInfo.levelNum = 1;
+
+// The time at which the current level was started.
+var startTime = new Date().getTime();
+
+/**
+ *  Game initialization.
+ */
+function init() {
+    // Setup our background music
+    playSound("data/sound/rocket.mp3", 9999, 0.2, 0);
+
+    // Setup our mouse / touch or accelerometer (in WebWorks) event handling
+	setupEventHandler();
+
+    // Initialize canvas WebGL context
+    var canvas = document.getElementById('canvas');
+    initGL(canvas);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+
+    // Set up perspective transform.
+    var pMatrix = mat4.create();
+    mat4.perspective(60, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0, pMatrix);
+
+    // Create loader to keep track of all loading objects.
+    loader = new Loader();
+
+    // Create and set up the ball.
+    var glow = new Texture("data/images/ball_backglow_256.png");
+    var tunnelRadius = 20;
+    ball = new Ball(tunnelRadius);
+    ball.initShader(pMatrix);
+    ball.setTexture(new Texture("data/images/ball_center_256.png"));
+    ball.setGlow(glow);
+
+    // Create and set up the particles (for explosions).
+    particles = new Particles();
+    particles.initShader(pMatrix);
+    particles.setTexture(glow);
+
+    // Create and set up the tunnel cylinder.
+    cylinder = new Cylinder(30, [0,0,0], 300, tunnelRadius);
+    cylinder.initShader(pMatrix);
+    cylinder.setBackground(new Texture("data/images/bg" + GameInfo.levelNum + ".png"));
+    cylinder.setWallTexture(new Texture("data/images/wall" + GameInfo.levelNum + ".png"));
+
+    loadLevel();
+
+    // Start the run loop.
+    tick();
+}
+
+/**
+ *  Loads the level specified by GameInfo.levelNum.
+ */
+function loadLevel() {
+    loader.load("data/levels/level" + GameInfo.levelNum + ".json", function(responseText) {
+        var walls = JSON.parse(responseText);
+        for (var i=0; i<walls.data.length; i++) {
+            cylinder.walls.push(new Wall(Math.PI * walls.data[i].angles[0]/180, 
+                                         Math.PI*walls.data[i].angles[1]/180, 
+                                         cylinder.radius, walls.data[i].position));
+            if (walls.data[i].position > cylinder.lastWallPos)
+                cylinder.lastWallPos = walls.data[i].position;
+        }
+    });
+}
+
+/**
+ *  Draws the current frame based upon GameInfo.state.
+ */
+function draw() {
+    switch (GameInfo.state) {
+        case GameInfo.INTRO_STATE:
+            if (!loader.loaded()) {
+                drawLoading();
+            } else {
+                drawLoaded();
+            }
+            drawIntro();
+            break;
+        case GameInfo.PLAY_STATE:
+        case GameInfo.EXPLODE_STATE:
+            drawLevel();
+            break;
+        case GameInfo.WIN1_STATE:
+            drawLevel();
+            break;
+        case GameInfo.WIN2_STATE:
+            drawVictory();
+            break;
+        case GameInfo.LOSE_STATE:
+            drawLoss();
+            break;
+    }
+}
+
+/**
+ *  While loading the next level the loading screen's onclick method is disabled.
+ *  This function can be used in the future to display a loading bar.
+ */
+function drawLoading() {
+    // We haven't loaded yet, so don't permit the user to start the level.
+    document.getElementById('intro').onclick = function() {};
+    document.getElementById('progressbar').style.display = 'block';
+    document.getElementById('tap_to_start').style.display = 'none';
+}
+
+/**
+ *  Once the next level has been loaded allow the user to click to begin.
+ */
+function drawLoaded() {
+    document.getElementById('intro').onclick = startGame;
+    document.getElementById('progressbar').style.display = 'none';
+    document.getElementById('tap_to_start').style.display = 'block';
+}
+        
+/**
+ *  This function is called to play a new level. It brings the user back to the intro screen
+ *  and sets up the next level.
+ */
+function restart() {
+    drawIntro();
+    var div = document.getElementById('info');
+    div.innerHTML = '';
+    div.style.display = 'none';
+    GameInfo.state = GameInfo.INTRO_STATE;
+    cylinder.reset();
+    particles.reset();
+    ball.reset();
+    startTime = new Date().getTime();
+    resetEventHandler();
+    GameInfo.levelNum = 1 + Math.floor(Math.random() * 5);
+    cylinder.setBackground(new Texture("data/images/bg" + GameInfo.levelNum + ".png"));
+    cylinder.setWallTexture(new Texture("data/images/wall" + GameInfo.levelNum + ".png"));
+    loadLevel();
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+/**
+ *  Makes the intro screen visible.
+ */
+function drawIntro() {
+    var div = document.getElementById('intro');
+    if (div.style.display != 'block') {
+        div.style.display = 'block';
+    }
+}
+
+/**
+ *  Hides the intro screen and starts the game.
+ */
+function startGame() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('tap_to_start').style.display = 'none';
+    startTime = new Date().getTime();
+    GameInfo.state = GameInfo.PLAY_STATE;
+    document.getElementById('canvas').onmousedown = handleMouseDown;
+}
+
+/**
+ *  Displays the lose screen.
+ */
+function drawLoss() {
+    var div = document.getElementById('info');
+    if (div.style.display != 'block') {
+        div.innerHTML = '<img onclick="restart();" src="data/images/tap_to_restart.png">';
+        div.style.display = 'block';
+        div.style.opacity = 0.7;
+    }
+}
+
+/**
+ *  Displays the victory screen.
+ */
+function drawVictory() {
+    var div = document.getElementById('info');
+    if (div.style.display != 'block') {
+        div.innerHTML = '<img onclick="restart();" src="data/images/win.png">';
+        div.style.display = 'block';
+        div.style.opacity = 0.7;
+        GameInfo.levelNum++;
+        if (GameInfo.levelNum > GameInfo.MAX_LEVEL_NUM)
+            GameInfo.levelNum = 1;
+    }
+}
+
+/**
+ *  Updates the current game state and object positions.
+ */
+function updateLevel(elapsedTime, currentTime) {
+    // If the ball crashed
+    if (ball.didCrash(cylinder)) {
+        playSound("data/sound/crash.mp3", 0, 1, 0);
+        GameInfo.state = GameInfo.EXPLODE_STATE;
+        setTimeout("GameInfo.state = GameInfo.LOSE_STATE;", 2000);
+    }
+    handleInput(elapsedTime);
+
+    // Update our cylinder position
+    cylinder.offset += cylinder.speed * elapsedTime;
+
+    // If we completed the level
+    if (GameInfo.state != GameInfo.WIN1_STATE && cylinder.pastLastWall()) {
+        GameInfo.state = GameInfo.WIN1_STATE;
+        GameInfo.winTime = currentTime;
+        setTimeout("GameInfo.state = GameInfo.WIN2_STATE;", GameInfo.TIME_TO_WIN);
+    }
+
+    // Update the cylinder speed
+    if (cylinder.speed < cylinder.maxSpeed)
+        cylinder.speed += elapsedTime * cylinder.acceleration;
+    else if (cylinder.speed > cylinder.maxSpeed)
+        cylinder.speed = cylinder.maxSpeed;
+}
+
+/**
+ *  Draws the current level.
+ */
+function drawLevel() {
+    var currentTime = new Date().getTime();
+    var elapsedTime = (currentTime - startTime)/1000;
+    startTime = currentTime;
+
+    // Only run our update code if we haven't crashed
+    if (GameInfo.state != GameInfo.EXPLODE_STATE)
+        updateLevel(elapsedTime, currentTime);
+
+    // Clear the screen
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Draw the cylinder
+    cylinder.draw(particles, currentTime, GameInfo);
+
+    // Draw the ball if we haven't crashed otherwise draw our explosion
+    if (GameInfo.state != GameInfo.EXPLODE_STATE)
+        ball.draw(GameInfo, currentTime);
+    else
+        particles.draw(ball.mvMatrix, elapsedTime);
+}
+
+/**
+ *  The render loop.
+ */
+function tick() {
+    requestAnimFrame(tick);
+    draw();
+}
+
+</script>
+
+</head>
+
+<body style="padding: 0; margin: 0">
+    <div id="info" style="position: absolute; width: 1024px; height: 512px; z-index: 1; display: none"></div>
+    <div id="intro" onclick="startGame();" style="position: absolute; width: 1024px; height: 512px; z-index: 1; display: none">
+        <img id="splashImg" src="data/images/splash.png">
+        <img id="progressbar" style="position: absolute; top: 475px; left: 500px;" src="data/images/progress_bar.gif">
+        <img id="tap_to_start" width="180px" style="position: absolute; top: 450px; left: 412px;" src="data/images/tap_to_start.png">
+    </div>
+    <div id="background" style="top: 0px; left: 0px; width: 1024px; height: 600px; background-color: black">
+        <canvas id="canvas" width="1024px" height="512px" style="margin-top: 44px; width: 1024px; height: 512px; border: none;"></canvas>
+    </div>
+    <iframe onload="init();" id="shaders" src="shaders.html" style="display:none"></iframe>
+</body>
+
+</html>
