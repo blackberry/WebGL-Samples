@@ -18,6 +18,12 @@
 var RAD2DEG = 180 / Math.PI;
 
 /**
+ * If we are running this game in a desktop browser, we will use quads instead of point sprites
+ * for drawing the ball and explosion effect
+ */
+var playbook = navigator.userAgent.indexOf("PlayBook") > -1 ? true : false;
+
+/**
  *  Utility function to linearly interpolate between values a and b, according
  *  to the parameter t, which varies between 0 and 1.
  */
@@ -34,6 +40,12 @@ Particles = function() {
     // Arrays of particle velocities and sizes.
     this.velocityData = [];
     this.sizeData = [];
+    if (!playbook) {
+        var positions = [-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, -1, 0, 1, 1, 0];
+        var texCoords = [0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1];
+        this.positionData = [];
+        this.texCoordData = [];
+    }
 
     // Initial time, this varies from 0 to 1.
     this.time = 0;
@@ -43,15 +55,35 @@ Particles = function() {
         var speed = 10.0 + Math.random() * 15.0;
         var angle = Math.random() * 2 * Math.PI;
         var angle2 = Math.random() * 2 * Math.PI;
-        this.velocityData[i*3] = speed * Math.cos(angle) * Math.sin(angle2);
-        this.velocityData[i*3+1] = speed * Math.sin(angle) * Math.sin(angle2);
-        this.velocityData[i*3+2] = speed * Math.cos(angle2);
-        this.sizeData[i] = Math.random() * 100;
+        if (playbook) {
+            this.velocityData[i*3] = speed * Math.cos(angle) * Math.sin(angle2);
+            this.velocityData[i*3+1] = speed * Math.sin(angle) * Math.sin(angle2);
+            this.velocityData[i*3+2] = speed * Math.cos(angle2);
+            this.sizeData[i] = Math.random() * 100;
+        } else {
+            // Append quad size (6-verts per quad)
+            var tempSize = Math.random() * 100;
+            var concatSize = [tempSize, tempSize, tempSize, tempSize, tempSize, tempSize];
+            this.sizeData = this.sizeData.concat(concatSize);
+
+            // Append quad velocity (6-verts per quad)
+            var tempVelocity = [speed * Math.cos(angle) * Math.sin(angle2), speed * Math.sin(angle) * Math.sin(angle2), speed * Math.cos(angle2)];
+            var concatVelocity = [tempVelocity,tempVelocity, tempVelocity, tempVelocity, tempVelocity, tempVelocity];
+            this.velocityData = this.velocityData.concat(concatVelocity);
+
+            // Append position and texture coordinates (6-verts per quad)
+            this.positionData = this.positionData.concat(positions);
+            this.texCoordData = this.texCoordData.concat(texCoords);
+        }
     }
 
     // Create and fill the buffers with data
     this.velocityBuffer = createArrayBuffer(this.velocityData, 3);
     this.sizeBuffer = createArrayBuffer(this.sizeData, 1);
+    if (!playbook) {
+        this.positionBuffer = createArrayBuffer(this.positionData, 3);
+        this.texCoordBuffer = createArrayBuffer(this.texCoordData, 2);
+    }
 }
 
 /**
@@ -59,9 +91,14 @@ Particles = function() {
  *  doesn't change.
  */
 Particles.prototype.initShader = function(perspective) {
-    var attributes = ["aVelocity", "aSize"];
     var uniforms = ["uPMatrix", "uSampler", "uTime"];
-    this.shader = loadShader("particle-vs", "particle-fs", attributes, uniforms);
+    if (playbook) {
+        var attributes = ["aVelocity", "aSize"];
+        this.shader = loadShader("particle-vs", "particle-fs", attributes, uniforms);
+    } else {
+        var attributes = ["aPosition", "aTextureCoord", "aVelocity", "aSize"];
+        this.shader = loadShader("particle-quad-vs", "particle-quad-fs", attributes, uniforms);
+    }
     gl.uniformMatrix4fv(this.shader.uniform["uPMatrix"], false, perspective);
 }
 
@@ -93,11 +130,17 @@ Particles.prototype.draw = function (ball_matrix, elapsedTime) {
 
     // Send the parameters to the shader
     gl.uniform1f(this.shader.uniform["uTime"], this.time);
-    setVertexAttribs(this.shader, [this.velocityBuffer, this.sizeBuffer]);
+    if (playbook)
+        setVertexAttribs(this.shader, [this.velocityBuffer, this.sizeBuffer]);
+    else
+        setVertexAttribs(this.shader, [this.positionBuffer, this.texCoordBuffer, this.velocityBuffer, this.sizeBuffer]);
 
-    // Draw the points. We don't actually draw all of them at all times,
+    // Draw the points / quads. We don't actually draw all of them at all times,
     // to give a shimmering effect as particles appear and disappear.
-    gl.drawArrays(gl.POINTS, 0, this.sizeData.length - Math.abs(Math.sin(this.time*Math.PI*2)*150));
+    if (playbook)
+        gl.drawArrays(gl.POINTS, 0, this.sizeData.length - Math.abs(Math.sin(this.time*Math.PI*2)*150));
+    else
+        gl.drawArrays(gl.TRIANGLES, 0, this.positionBuffer.numItems - Math.floor(Math.abs(Math.sin(this.time*Math.PI*2)*150))*6);
 
     // Re-enable depth testing
     gl.enable(gl.DEPTH_TEST);
@@ -447,12 +490,28 @@ Ball = function (tunnelRadius) {
     this.ballZ = -30;
 
     // Position data for the two parts of the ball.
-    var positionData = [0, -tunnelRadius + 7, this.ballZ , 1];
-    var positionData2 = [0, -tunnelRadius + 7, this.ballZ + 0.05, 1];
+    if (playbook) {
+        var positionData = [0, -tunnelRadius + 7, this.ballZ , 1];
+        var positionData2 = [0, -tunnelRadius + 7, this.ballZ + 0.05, 1];
+    } else {
+        // Set up the coordinates of our quad and the texture coords that will be mapped to that quad
+        var positionData = [-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0];
+        var texCoordData = [0, 1, 1, 1, 0, 0, 1, 0];
+        var texCoordData2 = [0, 0, 1, 0, 0, 1, 1, 1];
+
+        // Ball glow effect
+        this.ballGlow = 0;
+    }
 
     // Create and fill buffer data.
-    this.positionBuffer = createArrayBuffer(positionData, 4);
-    this.positionBuffer2 = createArrayBuffer(positionData2, 4);
+    if (playbook) {
+        this.positionBuffer = createArrayBuffer(positionData, 4);
+        this.positionBuffer2 = createArrayBuffer(positionData2, 4);
+    } else {
+        this.positionBuffer = createArrayBuffer(positionData, 3);
+        this.texCoordBuffer = createArrayBuffer(texCoordData, 2);
+        this.texCoordBuffer2 = createArrayBuffer(texCoordData2, 2);
+    }
 
     // Degrees per second rotation speed
     this.rotationSpeed = 0;
@@ -473,7 +532,20 @@ Ball = function (tunnelRadius) {
                                       Math.abs(this.glowOffset/2), 
                                       0]);
         }
-        
+
+        if (!playbook) {
+            if (this.ballGlow < 0.3)
+                this.ballGlow += 0.0075;
+            else
+                this.ballGlow = -this.ballGlow;
+            mat4.translate(mvMatrix, [0, -13, this.ballZ]);
+            mat4.rotate(mvMatrix, 0.1, [0, 1, 0]);
+            if (glow)
+                mat4.scale(mvMatrix, [5.0+Math.abs(this.ballGlow), 5.0+Math.abs(this.ballGlow), 5.0]);
+            else
+                mat4.scale(mvMatrix, [5.0, 5.0, 5.0]);
+        }
+
         // Store the modelview matrix, so the explosion
         // can find the ball later.
         this.mvMatrix = mvMatrix;
@@ -486,9 +558,15 @@ Ball = function (tunnelRadius) {
  *  transform, since it doesn't change.
  */
 Ball.prototype.initShader = function(perspective) {
-    var attributes = ["aPosition"];
-    var uniforms = ["uPMatrix", "uMVMatrix", "uSizeMult", "uSampler", "uAmbient", "uTransparency"];
-    this.shader = loadShader("ball-vs", "ball-fs", attributes, uniforms);
+    if (playbook) {
+        var attributes = ["aPosition"];
+        var uniforms = ["uPMatrix", "uMVMatrix", "uSizeMult", "uSampler", "uAmbient", "uTransparency"];
+        this.shader = loadShader("ball-vs", "ball-fs", attributes, uniforms);
+    } else {
+        var attributes = ["aPosition", "aTextureCoord"];
+        var uniforms = ["uPMatrix", "uMVMatrix", "uSampler", "uAmbient", "uTransparency"];
+        this.shader = loadShader("ball-quad-vs", "ball-quad-fs", attributes, uniforms);
+    }
     gl.uniformMatrix4fv(this.shader.uniform["uPMatrix"], false, perspective);
 }
 
@@ -522,22 +600,40 @@ Ball.prototype.draw = function (gameInfo, currentTime) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // Set up buffer data.
-    setVertexAttribs(this.shader, [this.positionBuffer]);
+    if (playbook) {
+        setVertexAttribs(this.shader, [this.positionBuffer]);
+    } else {
+        setVertexAttribs(this.shader, [this.positionBuffer, this.texCoordBuffer]);
+        gl.disable(gl.DEPTH_TEST);
+    }
 
     // Draw the glow.
-    gl.uniform1f(this.shader.uniform["uSizeMult"], 1.025 + 0.025 * Math.sin(currentTime/100));
+    if (playbook)
+        gl.uniform1f(this.shader.uniform["uSizeMult"], 1.025 + 0.025 * Math.sin(currentTime/100));
     gl.uniform1f(this.shader.uniform["uTransparency"], 1.0);
     this.setMatrixUniforms(this.shader, true);
     this.glowTexture.bind();
-    gl.drawArrays(gl.POINTS, 0, 1);
+    if (playbook)
+        gl.drawArrays(gl.POINTS, 0, 1);
+    else
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     // Draw the ball.
     gl.uniform1f(this.shader.uniform["uTransparency"], 1.0 - ball_ambient/40.0);
-    setVertexAttribs(this.shader, [this.positionBuffer2]);
-    gl.uniform1f(this.shader.uniform["uSizeMult"], 1.0);
+    if (playbook) {
+        setVertexAttribs(this.shader, [this.positionBuffer2]);
+        gl.uniform1f(this.shader.uniform["uSizeMult"], 1.0);
+    } else {
+        setVertexAttribs(this.shader, [this.positionBuffer, this.texCoordBuffer2]);
+    }
     this.setMatrixUniforms(this.shader, false);
     this.texture.bind();
-    gl.drawArrays(gl.POINTS, 0, 1);
+    if (playbook) {
+        gl.drawArrays(gl.POINTS, 0, 1);
+    } else {
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.enable(gl.DEPTH_TEST);
+    }
 
     // Disable blending again - it's expensive.
     gl.disable(gl.BLEND);
