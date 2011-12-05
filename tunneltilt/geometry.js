@@ -68,7 +68,10 @@ Particles = function() {
 
             // Append quad velocity (6-verts per quad)
             var tempVelocity = [speed * Math.cos(angle) * Math.sin(angle2), speed * Math.sin(angle) * Math.sin(angle2), speed * Math.cos(angle2)];
-            var concatVelocity = [tempVelocity,tempVelocity, tempVelocity, tempVelocity, tempVelocity, tempVelocity];
+            var concatVelocity = [];
+            for(var j=0; j<6;j++) {
+                concatVelocity = concatVelocity.concat(tempVelocity);
+            }
             this.velocityData = this.velocityData.concat(concatVelocity);
 
             // Append position and texture coordinates (6-verts per quad)
