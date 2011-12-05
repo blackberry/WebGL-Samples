@@ -49,6 +49,39 @@ void main() {
 }
 </script>
 
+<script id="ball-quad-vs" type="x-shader/x-vertex">
+attribute vec3 aPosition;
+attribute vec2 aTextureCoord;
+
+uniform mat4 uPMatrix;
+uniform mat4 uMVMatrix;
+
+varying vec2 vTextureCoord;
+
+void main() {
+    vec4 position = uMVMatrix * vec4(aPosition, 1.0);
+    gl_Position = uPMatrix * position;
+    vTextureCoord = aTextureCoord;
+}
+</script>
+
+<script id="ball-quad-fs" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+precision highp sampler2D;
+#endif
+
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform float uAmbient;
+uniform float uTransparency;
+
+void main() {
+    vec4 tex = texture2D(uSampler, vTextureCoord);
+    gl_FragColor = vec4(uAmbient * (vec3(0.01, 0.01, 0.01) + tex.rgb), tex.a * uTransparency);
+}
+</script>
+
 <script id="tunnel-vs" type="x-shader/x-vertex">
 attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;
@@ -153,6 +186,43 @@ uniform sampler2D uSampler;
 
 void main() {
     gl_FragColor = texture2D(uSampler, gl_PointCoord);
+}
+</script>
+
+<script id="particle-quad-vs" type="x-shader/x-vertex">
+attribute vec3 aPosition;
+attribute vec2 aTextureCoord;
+attribute vec3 aVelocity;
+attribute float aSize;
+
+varying vec2 vTextureCoord;
+uniform mat4 uPMatrix;
+uniform float uTime;
+
+void main() {
+    float rSize = max(0.0, 1.0 - uTime);
+    float size = (aSize / 23.0 * rSize);
+    if (size < 1.1)
+        size = 0.0;
+    vec4 offset = vec4(aVelocity * uTime, 0.0);
+    vec4 position = vec4(aPosition, 0.0) * size;
+    position = vec4(0.0, -15.0, -40.0, 1.0) + position + offset;
+    vTextureCoord = aTextureCoord;
+    gl_Position = uPMatrix * position;
+}
+</script>
+
+<script id="particle-quad-fs" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+precision highp sampler2D;
+#endif
+
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+
+void main() {
+    gl_FragColor = texture2D(uSampler, vTextureCoord);
 }
 </script>
 
