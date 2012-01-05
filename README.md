@@ -1,8 +1,12 @@
+# TunnelTilt
+
+To play TunnelTilt in a WebGL compatible browser, click [here](http://blackberry.github.com/WebGL-Samples/tunneltilt/)
+
 # WebGL-Samples
 
-The _**WebGL-Samples**_ repository contains Open Source samples in WebGL for the WebKit-based browser used in 
+The _**WebGL-Samples**_ repository contains Open Sourced WebGL samples for the WebKit-based browser used by the 
 BlackBerry&reg; Tablet OS.  WebGL is enabled on PlayBook OS 2.0 when used inside an HTML5 application packaged 
-with [BlackBerry WebWorks](http://developer.blackberry.com/html5).  PlayBook OS 2.0 is is currently available as a 
+with [BlackBerry WebWorks](http://developer.blackberry.com/html5).  PlayBook OS 2.0 is currently available as a 
 developer preview.
 
 The WebGL samples will not run in the regular PlayBook browser due to security concerns.  However, when packaged 
