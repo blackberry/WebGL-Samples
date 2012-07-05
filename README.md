@@ -1,4 +1,4 @@
-# TunnelTilt
+# Run Demos on your (Modern) Browser
 
 To play TunnelTilt in a WebGL compatible browser, click [here](http://blackberry.github.com/WebGL-Samples/tunneltilt/)
 
@@ -18,6 +18,14 @@ These samples are open sourced under the [Apache 2.0 license](http://www.apache.
 
 * [Jonathan Feldstein](https://github.com/jfeldste)
 * [Vadym Voznyuk](https://github.com/vvoznyuk)
+* [Erik Oros](https://github.com/oros)
+
+## Samples
+
+There are currently two samples:
+
+* TunnelTilt - This game is a WebWorks application that showcases WebGL running on the BlackBerry® platform.  Guide a glowing orb down several trippy tunnels while avoiding the obstacles
+* PeaksAndValleys - Your Description Goes here
 
 
 ## Bug Reporting and Feature Requests
