@@ -24,8 +24,8 @@ These samples are open sourced under the [Apache 2.0 license](http://www.apache.
 
 There are currently two samples:
 
-* TunnelTilt - This game is a WebWorks application that showcases WebGL running on the BlackBerry® platform.  Guide a glowing orb down several trippy tunnels while avoiding the obstacles
-* PeaksAndValleys - Your Description Goes here
+* TunnelTilt - This game is a WebWorks application that showcases WebGL running on the BlackBerry® platform.  Guide a glowing orb down several trippy tunnels while avoiding the obstacles.
+* PeaksAndValleys - This sample combines common WebGL topics (lighting, skybox, terrain generation and pathing, movement, textures, etc.) and provides a sample implementation. Take a look, pick it apart, and build up something magical!
 
 
 ## Bug Reporting and Feature Requests
