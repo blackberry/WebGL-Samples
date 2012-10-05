@@ -1,6 +1,5 @@
-<h2>Background</h2>
+<h2>Tested On</h2>
 <p>
-Tested on:
 <ul>
 <li>BlackBerry PlayBook OS 2.1.0.1032</li>
 <li>BlackBerry Dev Alpha 10.0.9.388</li>
