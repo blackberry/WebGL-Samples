@@ -23,4 +23,8 @@
 	<author>Erik Oros</author>
 	<content src="index.html" />
 	<name>PeaksAndValleys</name>
+	<feature id="blackberry.app.event" />
+	<feature id="blackberry.identity" />
+	<feature id="blackberry.invoke" />
+	<feature id="blackberry.invoke.BrowserArguments" />
 </widget>
