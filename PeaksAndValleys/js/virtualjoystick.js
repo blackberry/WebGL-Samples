@@ -47,8 +47,7 @@ var VirtualJoystick	= function () {
 		this.links = [0, 0, 0];			// This helps us keep track of which touch point coincides with 
 
 		/* Associate these controls with our WebGL <div>. */
-		this._container = document.querySelector("#glDiv");
-		this._container.style.position	= "relative";
+		this._container = document.querySelector("#easle");
 
 		/* Build each touch point control. */
 		for (i = 0; i < this.touchPoints.length; i = i + 1) {
@@ -78,8 +77,8 @@ var VirtualJoystick	= function () {
 		cross = this._buildCrossHairs("cyan");
 		cross.style.position = "absolute";
 		cross.style.display = "";
-		cross.style.left = "496px";
-		cross.style.top = "240px";
+		cross.style.left = (window.innerWidth / 2.0 - 16.0) + "px";
+		cross.style.top = ((window.innerHeight - 88.0) / 2.0 - 16.0) + "px";
 		this._container.appendChild(cross);
 
 		__bind = function (fn, me) {
@@ -233,12 +232,12 @@ VirtualJoystick.prototype._onMouseDown = function (event) {
 	"use strict";
 
 	/* Only respond to touch events inside of our WebGL canvas. */
-	if (event.clientY > 512) {
+	if (event.clientY > window.innerWidth / 2.0) {
 		return;
 	}
 
 	/* If the touch event occurs on the left side of the screen... */
-	if (event.clientX < 512) {
+	if (event.clientX < window.innerWidth / 2.0) {
 		/* ...initialize links[0] to reference this.touchPoints[0]. */
 		this.links[0] = 0;
 	} else {
@@ -266,7 +265,7 @@ VirtualJoystick.prototype._onTouchStart = function (event) {
 	var i = 0;
 	try {
 		/* Check that we're within our WebGL control. */
-		if (event.clientY > 512) {
+		if (event.clientY > window.innerWidth / 2.0) {
 			return;
 		}
 
@@ -279,7 +278,7 @@ VirtualJoystick.prototype._onTouchStart = function (event) {
 		}
 
 		/* Link this touch point to the corresponding left or right joystick. */
-		if (event.changedTouches[0].clientX < 512) {
+		if (event.changedTouches[0].clientX < window.innerWidth / 2.0) {
 			this.links[event.changedTouches[0].identifier] = 0;
 		} else {
 			this.links[event.changedTouches[0].identifier] = 1;

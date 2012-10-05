@@ -18,23 +18,98 @@
 
 <html>
 	<head>
-		<meta name="viewport" content="target-densitydpi=device-dpi,user-scalable=no,initial-scale=1.0"/>
+		<script type="text/javascript">
+			/*global window, document */
+
+			(function () {
+				'use strict';
+				var meta;
+
+				meta = document.createElement("meta");
+				meta.setAttribute('name', 'viewport');
+				meta.setAttribute('content', 'initial-scale=' + (1.0 / window.devicePixelRatio) + ',user-scalable=no');
+				document.getElementsByTagName('head')[0].appendChild(meta);
+			}());
+		</script>
+
 		<style type="text/css">
 			body {
-				background-color: #000000;
-				height: 512px;
+				background-color: black;
 				margin: 0;
-				overflow: hidden;
 				padding: 0;
-				width: 1024px;
+				width: 100%;
+				height: 100%;
+			}
+			#container {
+				position: fixed;
+				width: 100%;
+				top: 0px;
+				bottom: 0px;
+			}
+			#easle {
+				position: fixed;
+				width: 100%;
+				top: 0px;
+				bottom: 88px;
+			}
+			#glCanvas {
+				width: 100%;
+				height: 100%;
+				border: none;
+			}
+			#license {
+				position: absolute;
+				z-index: 999;
+				width: 50%;
+				max-height: 512px;
+				background: black;
+				color: white;
+				overflow: scroll;
+				overflow-x: hidden;
+				-webkit-transform: translate3d(200%, 0, 0);
+				-webkit-transition: all 300ms cubic-bezier(0.075, 0.820, 0.165, 1.000);
+			}
+			#license.open {
+				-webkit-transform: translate3d(100%, 0, 0);
+			}
+			#footer {
+				position: fixed;
+				width: 100%;
+				height: 88px;
+				bottom: 0px;
+			}
+			#toggleLicense {
+				position: fixed;
+				right: 10px;
+				bottom: 10px;
 			}
 		</style>
 	</head>
 	<body>
-		<div id="glDiv" style="border: none; margin: 0; padding: 0;">
-			<canvas id="glCanvas" style="border: none;" height="512" width="1024">
-			</canvas>
+		<div id="container">
+			<div id="easle">
+				<canvas id="glCanvas" width="1024" height="512"></canvas>
+			</div>
+			<div id="license">
+				<p style="padding: 0px 20px;">This sample's primary intent is to provide a number of WebGL concepts working in one place. This is not intended to be a market-ready application for end consumers. While it can be fun to run around the countryside, this is primarily a WebGL learning resource. Some key concepts include:</p>
+				<ul>
+					<li>Rendering objects in solid colours.</li>
+					<li>Rendering objects with textures applied.</li>
+					<li>Blending texures and colours on a single object.</li>
+					<li>Ambient and directional lighting.</li>
+					<li>Skybox generation.</li>
+					<li>Terrain generation.</li>
+					<li>Touch controls.</li>
+				</ul>
+				<p style="padding: 0px 20px;">For full licensing information, please visit the <a id="invokeBrowser" href="#">BlackBerry/WebGL-Samples</a> Github repository.</p>
+			</div>
+			<div id="footer">
+				<div id="toggleLicense">
+					<img src="images/icon_rules.png" />
+				</div>
+			</div>
 		</div>
+
 		<script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
 		<script type="text/javascript" src="js/Utils.js"></script>
 		<script type="text/javascript" src="js/GLSkybox.js"></script>
@@ -43,13 +118,47 @@
 		<script type="text/javascript" src="js/virtualjoystick.js"></script>
 		<script type="text/javascript" src="js/Game.js"></script>
 		<script type="text/javascript">
-			/*global window, document, console, Game */
+			/*global window, document, console, Game, blackberry */
 
 			var game = null;
+			function invokeBrowser() {
+				"use strict";
+				var args, uri;
+
+				if (typeof blackberry === 'undefined') {
+					console.log('blackberry does not exist.');
+				} else {
+					if (typeof blackberry.invoke === 'undefined') {
+						console.log('blackberry.invoke does not exist.');
+					} else {
+						uri = 'https://github.com/blackberry/WebGL-Samples/tree/master/PeaksAndValleys';
+						if (typeof blackberry.invoke.BrowserArguments === 'undefined') {
+							/* BB10 */
+							blackberry.invoke.invoke({ uri: uri }, function () {}, function () {});
+						} else {
+							/* PlayBook */
+							args = new blackberry.invoke.BrowserArguments(uri);
+							blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+						}
+					}
+				}
+				return false;
+			}
+
+			function toggleLicense() {
+				"use strict";
+				if (document.querySelector('#license').className === 'open') {
+					document.querySelector('#license').className = '';
+				} else {
+					document.querySelector('#license').className = 'open';
+				}
+			}
 
 			function ready() {
 				"use strict";
 				try {
+					document.querySelector('#toggleLicense').addEventListener('click', toggleLicense, false);
+					document.querySelector('#invokeBrowser').addEventListener('click', invokeBrowser, false);
 					game = new Game();
 				} catch (err) {
 					console.log("ready: " + err);

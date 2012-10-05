@@ -1,3 +1,10 @@
+<h2>Tested On</h2>
+<p>
+<ul>
+<li>BlackBerry PlayBook OS 2.1.0.1032</li>
+<li>BlackBerry Dev Alpha 10.0.9.388</li>
+</ul>
+</p>
 <h2>Background</h2>
 <p>
 This sample's primary intent is to provide a number of WebGL concepts working in one place. This
