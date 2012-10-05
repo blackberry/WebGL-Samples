@@ -1,5 +1,13 @@
 <h2>Background</h2>
 <p>
+Tested on:
+<ul>
+<li>BlackBerry PlayBook OS 2.1.0.1032</li>
+<li>BlackBerry Dev Alpha 10.0.9.388</li>
+</ul>
+</p>
+<h2>Background</h2>
+<p>
 This sample's primary intent is to provide a number of WebGL concepts working in one place. This
 is not intended to be a market-ready application for end consumers. While it can be fun to run
 around the countryside, this is primarily a WebGL learning resource. Some key concepts include:
