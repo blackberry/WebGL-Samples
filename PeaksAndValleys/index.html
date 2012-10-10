@@ -31,86 +31,7 @@
 				document.getElementsByTagName('head')[0].appendChild(meta);
 			}());
 		</script>
-
-		<style type="text/css">
-			body {
-				background-color: black;
-				margin: 0;
-				padding: 0;
-				width: 100%;
-				height: 100%;
-			}
-			#container {
-				position: fixed;
-				width: 100%;
-				top: 0px;
-				bottom: 0px;
-			}
-			#easle {
-				position: fixed;
-				width: 100%;
-				top: 0px;
-				bottom: 88px;
-			}
-			#glCanvas {
-				width: 100%;
-				height: 100%;
-				border: none;
-			}
-			#license {
-				position: absolute;
-				z-index: 999;
-				width: 50%;
-				max-height: 512px;
-				background: black;
-				color: white;
-				overflow: scroll;
-				overflow-x: hidden;
-				-webkit-overflow-scrolling: -blackberry-touch;
-				-webkit-transform: translate3d(200%, 0, 0);
-				-webkit-transition: all 400ms cubic-bezier(0.075, 0.820, 0.165, 1.000);
-			}
-			#license.open {
-				-webkit-transform: translate3d(100%, 0, 0);
-			}
-			#footer {
-				position: fixed;
-				width: 100%;
-				height: 88px;
-				bottom: 0px;
-			}
-			#licenseShow, #licenseHide, #audioOn, #audioOff {
-				background-image: url('images/icons.png');
-				background-size: 256px 64px;
-				position: fixed;
-				width: 64px;
-				height: 64px;
-				bottom: 10px;
-				-webkit-transition: all 800ms cubic-bezier(0.075, 0.820, 0.165, 1.000);
-			}
-			#licenseShow, #licenseHide {
-				right: 10px;
-			}
-			#audioOn, #audioOff {
-				left: 10px;
-			}
-			#licenseShow {
-				opacity: 1.0;
-				background-position: 0px 0px;
-			}
-			#licenseHide {
-				opacity: 0.0;
-				background-position: -64px 0px;
-			}
-			#audioOn {
-				opacity: 1.0;
-				background-position: -128px 0px;
-			}
-			#audioOff {
-				opacity: 0.0;
-				background-position: -192px 0px;
-			}
-		</style>
+		<link type="text/css" rel="stylesheet" href="css/styles.css">
 	</head>
 	<body>
 		<div id="container">
@@ -118,7 +39,7 @@
 				<canvas id="glCanvas" width="1024" height="512"></canvas>
 			</div>
 			<div id="license">
-				<p style="padding: 0px 20px;">This sample's primary intent is to provide a number of WebGL concepts working in one place. This is not intended to be a market-ready application for end consumers. While it can be fun to run around the countryside, this is primarily a WebGL learning resource. Some key concepts include:</p>
+				<p>This sample's primary intent is to provide a number of WebGL concepts working in one place. This is not intended to be a market-ready application for end consumers. While it can be fun to run around the countryside, this is primarily a WebGL learning resource. Some key concepts include:</p>
 				<ul>
 					<li>Rendering objects in solid colours.</li>
 					<li>Rendering objects with textures applied.</li>
@@ -128,7 +49,25 @@
 					<li>Terrain generation.</li>
 					<li>Touch controls.</li>
 				</ul>
-				<p style="padding: 0px 20px;">For full licensing information, please visit the <a id="invokeBrowser" href="#">BlackBerry/WebGL-Samples</a> Github repository.</p>
+				<p>For full licensing information, please visit the <a href="#" uri="https://github.com/blackberry/WebGL-Samples/tree/master/PeaksAndValleys">BlackBerry/WebGL-Samples</a> Github repository.</p>
+				<p>Immense thank you to the following people. They might not know how much they helped, but I appreciate it none the less.</p>
+				<p>
+					<a href="#" uri="http://www.learningwebgl.com">Learning WebGL</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="https://github.com/toji/gl-matrix">Brandon Jones (toji)</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="https://github.com/jeromeetienne/virtualjoystick.js">Jerome Etienne (jetienne)</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="http://chandler.prallfamily.com/2011/06/blending-webgl-textures">Chandler Prall</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="http://webreflection.blogspot.ca/2010/09/fragment-and-vertex-shaders-my-way-to.html">Andrea Giammarch</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="http://paulirish.com/2011/requestanimationframe-for-smart-animating">Paul Irish and Erik Moller</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="https://github.com/mrdoob/three.js">Ricardo Cabello (mrdoob)</a>
+					&nbsp;|&nbsp;
+					<a href="#" uri="https://developer.valvesoftware.com/wiki/Skybox_(2D)_with_Terragen">The Valve Developer Community</a>
+				</p>
 			</div>
 			<div id="footer">
 				<div id="audioOn" class="active"></div>
@@ -149,7 +88,7 @@
 			/*global window, document, console, Game, blackberry */
 
 			var game = null;
-			function invokeBrowser() {
+			function invokeBrowser(e) {
 				"use strict";
 				var args, uri;
 
@@ -159,7 +98,7 @@
 					if (typeof blackberry.invoke === 'undefined') {
 						console.log('blackberry.invoke does not exist.');
 					} else {
-						uri = 'https://github.com/blackberry/WebGL-Samples/tree/master/PeaksAndValleys';
+						uri = e.target.getAttribute('uri');
 						if (typeof blackberry.invoke.BrowserArguments === 'undefined') {
 							/* BB10 */
 							blackberry.invoke.invoke({ uri: uri }, function () {}, function () {});
@@ -207,12 +146,19 @@
 
 			function ready() {
 				"use strict";
+				var elements, n;
+
 				try {
 					document.querySelector('#licenseShow').addEventListener('click', toggleLicense, false);
 					document.querySelector('#licenseHide').addEventListener('click', toggleLicense, false);
 					document.querySelector('#audioOn').addEventListener('click', toggleAudio, false);
 					document.querySelector('#audioOff').addEventListener('click', toggleAudio, false);
-					document.querySelector('#invokeBrowser').addEventListener('click', invokeBrowser, false);
+
+					elements = document.querySelectorAll('a');
+					for (n = 0; n < elements.length; n = n + 1) {
+						elements[n].addEventListener('click', invokeBrowser, false);
+					}
+
 					game = new Game();
 				} catch (err) {
 					console.log("ready: " + err);
