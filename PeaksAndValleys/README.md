@@ -101,7 +101,7 @@
 
 >   The BlackBerry platform has a number of payment services to help developers
 >   monetize their application, however as of November 2nd, support has not yet
->   been added for these to WebWorks.
+>   been added for these to WebWorks for BlackBerry 10.
 
 ### Multiplayer *(TODO)*
 
