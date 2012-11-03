@@ -27,7 +27,7 @@
 
 ### Endless Terrain
 
->   This release of PeaksAndValleys continuosly renders an area of 48 vertices
+>   This release of PeaksAndValleys continuosly renders an area of 60 vertices
 >   in all directions around the camera's current position. The end result does
 >   produce terrain 'popping' into view; something that will be addressed down
 >   the road.
