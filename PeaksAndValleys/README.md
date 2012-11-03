@@ -124,7 +124,7 @@
 >       
 >           -webkit-transition: opacity 200ms cubic-bezier(0.075, 0.820, 0.165, 1.000);
 >           
->       Continuing to investigate, but if anyone has thoughts, I'm happy to hear them.
+>       Continuing to investigate, but if anyone has thoughts, I'm happy to hear them. Still experiencing a slight stutter every few moments (memory release?)
 >   *   After selection from the swipedown menu, you must use the right-most red button to re-invoke the swipedown menu.
 >   *   BlackBerry Messenger registers, but no additional functionality is implemented yet.
 >   *   Audio was taken out for licensing reasons, looking to have some problem-free tracks soon.
