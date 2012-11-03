@@ -31,150 +31,264 @@
 				document.getElementsByTagName('head')[0].appendChild(meta);
 			}());
 		</script>
-		<link type="text/css" rel="stylesheet" href="css/styles.css">
+		<link type="text/css" rel="stylesheet" href="css/styles.css" />
 	</head>
 	<body>
 		<div id="container">
-			<div id="easle">
-				<canvas id="glCanvas" width="1024" height="512"></canvas>
-			</div>
-			<div id="license">
-				<p>This sample's primary intent is to provide a number of WebGL concepts working in one place. This is not intended to be a market-ready application for end consumers. While it can be fun to run around the countryside, this is primarily a WebGL learning resource. Some key concepts include:</p>
-				<ul>
-					<li>Rendering objects in solid colours.</li>
-					<li>Rendering objects with textures applied.</li>
-					<li>Blending texures and colours on a single object.</li>
-					<li>Ambient and directional lighting.</li>
-					<li>Skybox generation.</li>
-					<li>Terrain generation.</li>
-					<li>Touch controls.</li>
-				</ul>
-				<p>For full licensing information, please visit the <a href="#" uri="https://github.com/blackberry/WebGL-Samples/tree/master/PeaksAndValleys">BlackBerry/WebGL-Samples</a> Github repository.</p>
-				<p>Immense thank you to the following people. They might not know how much they helped, but I appreciate it none the less.</p>
-				<p>
-					<a href="#" uri="http://www.learningwebgl.com">Learning WebGL</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="https://github.com/toji/gl-matrix">Brandon Jones (toji)</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="https://github.com/jeromeetienne/virtualjoystick.js">Jerome Etienne (jetienne)</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="http://chandler.prallfamily.com/2011/06/blending-webgl-textures">Chandler Prall</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="http://webreflection.blogspot.ca/2010/09/fragment-and-vertex-shaders-my-way-to.html">Andrea Giammarch</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="http://paulirish.com/2011/requestanimationframe-for-smart-animating">Paul Irish and Erik Moller</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="https://github.com/mrdoob/three.js">Ricardo Cabello (mrdoob)</a>
-					&nbsp;|&nbsp;
-					<a href="#" uri="https://developer.valvesoftware.com/wiki/Skybox_(2D)_with_Terragen">The Valve Developer Community</a>
-				</p>
-			</div>
-			<div id="footer">
-				<div id="audioOn" class="active"></div>
-				<div id="audioOff"></div>
-				<div id="licenseShow" class="active"></div>
-				<div id="licenseHide"></div>
-			</div>
+			<div id="easle"><canvas id="canvas" width="1024" height="512"></canvas></div>
+			<div id="bbm" class="panel left"></div>
+			<div id="about" class="panel right"></div>
+			<div id="license" class="panel right"></div>
 		</div>
 
-		<script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
-		<script type="text/javascript" src="js/Utils.js"></script>
-		<script type="text/javascript" src="js/GLSkybox.js"></script>
-		<script type="text/javascript" src="js/GLTerrain.js"></script>
-		<script type="text/javascript" src="js/GLCube.js"></script>
-		<script type="text/javascript" src="js/virtualjoystick.js"></script>
-		<script type="text/javascript" src="js/Game.js"></script>
+		<script type="text/javascript" src="./js/webworks.js"></script>
+		<script type="text/javascript" src="./js/glMatrix-0.9.5.min.js"></script>
+		<script type="text/javascript" src="./js/swipemenu.js"></script>
+		<script type="text/javascript" src="./js/Utils.js"></script>
+		<script type="text/javascript" src="./js/AssetManager.js"></script>
+		<script type="text/javascript" src="./js/Freewill.js"></script>
+		<script type="text/javascript" src="./js/GLTerrain.js"></script>
+		<script type="text/javascript" src="./js/GLSkybox.js"></script>
 		<script type="text/javascript">
-			/*global window, document, console, Game, blackberry */
-
-			var game = null;
-			function invokeBrowser(e) {
-				"use strict";
-				var args, uri;
-
-				if (typeof blackberry === 'undefined') {
-					console.log('blackberry does not exist.');
-				} else {
-					if (typeof blackberry.invoke === 'undefined') {
-						console.log('blackberry.invoke does not exist.');
-					} else {
-						uri = e.target.getAttribute('uri');
-						if (typeof blackberry.invoke.BrowserArguments === 'undefined') {
-							/* BB10 */
-							blackberry.invoke.invoke({ uri: uri }, function () {}, function () {});
-						} else {
-							/* PlayBook */
-							args = new blackberry.invoke.BrowserArguments(uri);
-							blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
-						}
-					}
-				}
-				return false;
-			}
-
-			function toggleAudio() {
-				"use strict";
-				if (document.querySelector('#audioOn').className === 'active') {
-					/* Turn off audio. */
-					document.querySelector('#audioOn').className = '';
-					document.querySelector('#audioOn').style.opacity = '0.0';
-					document.querySelector('#audioOff').style.opacity = '1.0';
-				} else {
-					/* Turn on audio. */
-					document.querySelector('#audioOn').className = 'active';
-					document.querySelector('#audioOn').style.opacity = '1.0';
-					document.querySelector('#audioOff').style.opacity = '0.0';
-				}
-			}
-
-			function toggleLicense() {
-				"use strict";
-				if (document.querySelector('#licenseShow').className === 'active') {
-					/* Show license. */
-					document.querySelector('#licenseShow').className = '';
-					document.querySelector('#license').className = 'open';
-					document.querySelector('#licenseShow').style.opacity = '0.0';
-					document.querySelector('#licenseHide').style.opacity = '1.0';
-				} else {
-					/* Hide license. */
-					document.querySelector('#licenseShow').className = 'active';
-					document.querySelector('#license').className = '';
-					document.querySelector('#licenseShow').style.opacity = '1.0';
-					document.querySelector('#licenseHide').style.opacity = '0.0';
-				}
-			}
-
-			function ready() {
-				"use strict";
-				var elements, n;
-
-				try {
-					document.querySelector('#licenseShow').addEventListener('click', toggleLicense, false);
-					document.querySelector('#licenseHide').addEventListener('click', toggleLicense, false);
-					document.querySelector('#audioOn').addEventListener('click', toggleAudio, false);
-					document.querySelector('#audioOff').addEventListener('click', toggleAudio, false);
-
-					elements = document.querySelectorAll('a');
-					for (n = 0; n < elements.length; n = n + 1) {
-						elements[n].addEventListener('click', invokeBrowser, false);
-					}
-
-					game = new Game();
-				} catch (err) {
-					console.log("ready: " + err);
-				}
-				window.removeEventListener("DOMContentLoaded", ready, false);
-			}
-
-			/**
-			 * Source: http://www.aerotwist.com/tutorials/ten-things-i-learned
-			 */
+			/* Source: http://www.aerotwist.com/tutorials/ten-things-i-learned */
 			document.onselectstart = function () {
-				"use strict";
+				'use strict';
 				return false;
 			};
+		</script>
+		<script type="text/javascript">
+			/*global window, document, console, setTimeout, blackberry, swipemenu, AssetManager, Freewill, GLTerrain, GLSkybox, vec3, mat4, Float32Array */
 
-			window.addEventListener("DOMContentLoaded", ready, false);
+			'use strict';
+			var assets, gl, pMatrix, vMatrix, vMatrixStack, camera, freewill, position, rotation, terrain, skybox;
+
+			function render() {
+				var vCopy;
+
+				/* Clear the buffer and position our camera. */
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				mat4.identity(vMatrix);
+				mat4.rotate(vMatrix, camera.rotation[0], [1, 0, 0]);
+				mat4.rotate(vMatrix, camera.rotation[1], [0, 1, 0]);
+				mat4.rotate(vMatrix, camera.rotation[2], [0, 0, 1]);
+				mat4.translate(vMatrix, camera.position);
+
+				/* Render the skybox. */
+				vCopy = mat4.create();
+				mat4.set(vMatrix, vCopy);
+				vMatrixStack.push(vCopy);
+				skybox.render(pMatrix, vCopy);
+				vMatrix = vMatrixStack.pop();
+
+				/* Render the terrain. */
+				vCopy = mat4.create();
+				mat4.set(vMatrix, vCopy);
+				vMatrixStack.push(vCopy);
+				terrain.render(pMatrix, vCopy);
+				vMatrix = vMatrixStack.pop();
+			}
+
+			function update() {
+				/* Update our camera rotation and position. */
+				camera.rotation[0] += camera.rotation.velocity[0];
+				camera.rotation[1] += camera.rotation.velocity[1];
+				camera.position[0] += camera.position.velocity[0];
+				camera.position[1] = -terrain.update(camera.position[0], camera.position[2]) - 1.0;
+				camera.position[2] += camera.position.velocity[2];
+
+				/* Position the skybox at the camera. */
+				skybox.position[0] = -camera.position[0];
+				skybox.position[1] = -camera.position[1];
+				skybox.position[2] = -camera.position[2];
+			}
+
+			/* Request a new frame, update, and render. */
+			function tick() {
+				window.webkitRequestAnimationFrame(tick);
+				swipemenu.registered = !swipemenu.registered;
+				update();
+				render();
+			}
+
+			function initFreewill() {
+				var w, h, rotation, position, button;
+
+				/* Store for easier access. */
+				w = window.innerWidth;
+				h = window.innerHeight;
+
+				/* Initialize our Freewill. */
+				freewill = new Freewill({ 'container': document.querySelector('#easle') });
+
+				/* Add a button. */
+				button = freewill.addButton({ 'image': './images/freewill/buttonred.png',	'pos': [ w - 106.0, h - 98.0 ], 'opacLow': 0.3 });
+				button.onTouchStart = function () {
+					/* When clicked, will inject a swipemenu event. */
+					swipemenu.simulateSwipeEvent();
+				};
+
+				/* Add a Joystick to control camera rotation. */
+				rotation = freewill.addJoystick({
+					'imageBase': './images/freewill/dpad.png',
+					'imagePad': './images/freewill/pad.png',
+					'fixed': false,
+					//'pos': [w - 90.0, h - 188.0],
+					'trigger': [w / 2.0, 0.0, w / 2.0, h - 108.0],
+					'opacLow': 0.0
+				});
+
+				/* When the Joystick moves, we will base the camera's rotation off this Joystick. */
+				rotation.onTouchMove = function () {
+					camera.rotation.velocity[0] = rotation.velocity[1] / 1000.0;
+					camera.rotation.velocity[1] = rotation.velocity[0] / 1000.0;
+				};
+
+				/* Stop rotating the camera when we let go of the Joystick. */
+				rotation.onTouchEnd = function () {
+					camera.rotation.velocity[0] = 0.0;
+					camera.rotation.velocity[1] = 0.0;
+				};
+
+				/* Add a Joystick to control the camear position. */
+				position = freewill.addJoystick({
+					'imageBase': './images/freewill/dpad.png',
+					'imagePad': './images/freewill/pad.png',
+					'fixed': false,
+					//'pos': [90.0, h - 188.0],
+					'trigger': [0.0, 0.0, w / 2.0, h - 108.0],
+					'opacLow': 0.0
+				});
+
+				/* Move the camera when we're interacting with the Joystick. */
+				position.onTouchMove = function () {
+					var c, s;
+
+					c = Math.cos(camera.rotation[1]);
+					s = Math.sin(camera.rotation[1]);
+					camera.position.velocity[0] = -0.006 * (position.velocity[0] * c - position.velocity[1] * s);
+					camera.position.velocity[2] = -0.006 * (position.velocity[0] * s + position.velocity[1] * c);
+				};
+
+				/* Stop moving the camera when we release the Joystick. */
+				position.onTouchEnd = function () {
+					camera.position.velocity[0] = 0.0;
+					camera.position.velocity[2] = 0.0;
+				};
+			}
+
+			function initWebGL() {
+				var canvas;
+
+				/* Get our <canvas> and initialise WebGL. */
+				canvas = document.querySelector('#canvas');
+				gl = canvas.getContext('experimental-webgl');
+				gl.viewportWidth = canvas.width;
+				gl.viewportHeight = canvas.height;
+				gl.viewport(0, 0, canvas.width, canvas.height);
+				gl.clearColor(0.0, 0.0, 0.0, 1.0);
+				gl.enable(gl.DEPTH_TEST);
+				gl.disable(gl.CULL_FACE);
+
+				/* Our Projection matrix. */
+				pMatrix = mat4.create();
+				mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 500.0, pMatrix);
+
+				/* Our View matrix and View matrix stack. */
+				vMatrix = mat4.create();
+				vMatrixStack = [];
+
+				/* Our camera. Start at a random coordinate. */
+				camera = {};
+				camera.rotation = vec3.create([0.0, 0.0, 0.0]);
+				camera.rotation.velocity = vec3.create([0.0, 0.0, 0.0]);
+				camera.position = vec3.create([Math.random() * assets.json.terrain.width, 0.0, Math.random() * assets.json.terrain.height]);
+				camera.position.velocity = vec3.create([0.0, 0.0, 0.0]);
+
+				/* Create our terrain and skybox. */
+				terrain = new GLTerrain(gl);
+				skybox = new GLSkybox(gl);
+			}
+
+			/* Additional document functionality / event listeners. */
+			function initDOMControls() {
+				/* Add the swipe menu if available. */
+				if (typeof blackberry !== 'undefined' && typeof swipemenu !== 'undefined') {
+					swipemenu.doPageLoad();
+					swipemenu.setMenuHeight(128);
+
+					/* Add a BBM connect button. */
+					swipemenu.registered = false;
+					swipemenu.addButton('BBM', function () {
+						if (swipemenu.registered === false) {
+							/* Check for registration. */
+							blackberry.event.addEventListener('onaccesschanged', function (accessible, status) {
+								if (status === 'allowed') {
+									swipemenu.registered = accessible;
+									document.querySelector('#bbm').className = document.querySelector('#bbm').className + ' open';
+								}
+							}, false);
+
+							/* Attempt to register. */
+							blackberry.bbm.platform.register({
+								uuid: '563c5200-2391-11e2-81c1-0800200c9a66'
+							});
+						} else {
+							/* If we've already registered, show the BBM panel. */
+							document.querySelector('#bbm').className = document.querySelector('#bbm').className + ' open';
+						}
+					}, false, 'images/swipemenu/icon_options.png');
+
+					/* Add an about button. */
+					swipemenu.addButton('About', function () {
+						/* Show the about panel. */
+						document.querySelector('#about').className = document.querySelector('#about').className + ' open';
+					}, true, 'images/swipemenu/icon_rules.png');
+
+					/* Add a license button. */
+					swipemenu.addButton('License', function () {
+						/* Show the license panel. */
+						document.querySelector('#license').className = document.querySelector('#license').className + ' open';
+					}, true, 'images/swipemenu/icon_rules.png');
+
+					/* Whenever we touch, check to see whether we've hit the #controls element or a canvas element.*/
+					document.addEventListener('touchstart', function (e) {
+						var panels, n;
+
+						if (e.target === document.querySelector('#controls') || e.target.nodeName === 'CANVAS') {
+							/* If so, close any open panels. */
+							panels = document.querySelectorAll('.panel.open');
+							for (n = 0; n < panels.length; n = n + 1) {
+								panels[n].className = panels[n].className.replace(' open', '');
+							}
+						}
+					}, false);
+				}
+			}
+
+			/* Once our AssetManager announces it's ready, we can begin the remaining loading. */
+			function onpreloadcomplete() {
+				document.removeEventListener('PreloadComplete', onpreloadcomplete, false);
+				initDOMControls();
+				initWebGL();
+				initFreewill();
+				tick();
+			}
+
+			/* Once our blackberry object is ready, start preloading. */
+			function onwebworksready() {
+				document.removeEventListener('webworksready', onwebworksready, false);
+				document.addEventListener('PreloadComplete', onpreloadcomplete, false);
+				assets = new AssetManager();
+			}
+
+			/* Once the document is loaded, wait for the blackberry object. */
+			function ondomcontentloaded() {
+				window.removeEventListener('DOMContentLoaded', ondomcontentloaded, false);
+				document.addEventListener('webworksready', onwebworksready, false);
+			}
+
+			/* Kick everything off when the document is loaded. */
+			window.addEventListener('DOMContentLoaded', ondomcontentloaded, false);
 		</script>
 	</body>
 </html>
