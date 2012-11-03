@@ -16,24 +16,24 @@ preprocessor folder:
 
 This can be done by executing the following commands from the preprocessor
 folder:
-npm install fs
-npm install png-js
-npm install sylvester
+    npm install fs
+    npm install png-js
+    npm install sylvester
 
 The tool is executed with the following command:
 node dowork.js
 
 Parameters are read from config.json; example:
 
-{
-	"file":	"input.png",
-	"d_x": 1024,
-	"d_z": 1024,
-	"s_xz":	3,
-	"s_y": 80,
-	"s_t":	1,
-	"av_n":	5
-}
+    {
+    	"file":	"input.png",
+    	"d_x": 1024,
+    	"d_z": 1024,
+    	"s_xz":	3,
+    	"s_y": 80,
+    	"s_t":	1,
+    	"av_n":	5
+    }
 
 This indicates to use input.png (file) as the source file, and its dimensions
 are 1024 (d_x) by 1024 (d_z) pixels. We want to scale the dimensions of the
@@ -49,14 +49,14 @@ while rougher images may require larger values.
 
 The resulting JSON object will resemble:
 
-{
-	"width": d_x,
-	"height": d_z,
-	"tileSize": s_xz,
-	"vertices": [],
-	"coords": [],
-	"normals": []
-}
+    {
+    	"width": d_x,
+    	"height": d_z,
+    	"tileSize": s_xz,
+    	"vertices": [],
+    	"coords": [],
+    	"normals": []
+    }
 
 This object is written to terrain.json, which is created in a folder two
 levels up, in a subfolder called json. Specifically, this is the json
