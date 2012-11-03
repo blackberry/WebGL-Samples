@@ -121,7 +121,9 @@
 # Known Issues
 
 >   *   Noticing pretty heavy performance issues when I include the following in *styles.css* for *canvas.joystick* and *canvas.button*.
+>       
 >           -webkit-transition: opacity 200ms cubic-bezier(0.075, 0.820, 0.165, 1.000);
+>           
 >       Continuing to investigate, but if anyone has thoughts, I'm happy to hear them.
 >   *   After selection from the swipedown menu, you must use the right-most red button to re-invoke the swipedown menu.
 >   *   BlackBerry Messenger registers, but no additional functionality is implemented yet.
