@@ -80,7 +80,7 @@
 ### HTML5 Audio *(TODO)*
 
 >   Once license appropriate samples are produced, this sample will be
->   augmented to include backgroudn music and sound effects. Currently this
+>   augmented to include background music and sound effects. Currently this
 >   must be done withi HTML5 audio, however once *Web Audio API* is supported,
 >   it will be implemented in favour of <audio> elements.
 
