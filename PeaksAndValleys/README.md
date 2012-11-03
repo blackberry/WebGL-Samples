@@ -75,7 +75,7 @@
 >   PeaksAndValleys.
 >   
 >   These new controls allow for multiple Joysticks and Buttons to be placed
->   onscreen with the goal of simplicity.
+>   onscreen with the goal of simplicity and are not specific to WebGL applications.
 
 ### HTML5 Audio *(TODO)*
 
