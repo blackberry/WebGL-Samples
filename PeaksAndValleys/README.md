@@ -81,7 +81,7 @@
 
 >   Once license appropriate samples are produced, this sample will be
 >   augmented to include background music and sound effects. Currently this
->   must be done withi HTML5 audio, however once *Web Audio API* is supported,
+>   must be done with HTML5 audio, however once *Web Audio API* is supported,
 >   it will be implemented in favour of <audio> elements.
 
 ### Social Integration *(TODO)*
