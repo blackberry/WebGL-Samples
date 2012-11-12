@@ -25,7 +25,7 @@
 >   For more information on leveraging this tool, please refer to README.md in
 >   the tools/preprocessor folder.
 
-### Endless Terrain
+### Endless Terrain via Web Workers
 
 >   This release of PeaksAndValleys continuosly renders an area of 60 vertices
 >   in all directions around the camera's current position. The end result does
@@ -40,6 +40,10 @@
 >   When near the borders of the terrain / image, the Web Worker wraps around
 >   to retrieve information from the opposite end of the data to ensure the
 >   user can technically keep walking forever.
+>
+>   Future versions will focus around only loading those vertices that are
+>   within our field of view, allowing for more data to be processed in
+>   shorter amounts of time.
 
 ### Colour Shaders
 
