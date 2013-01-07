@@ -72,7 +72,7 @@
 >   *virtualjoystick.js* was used as a basis for camera movement and rotation.
 >   Since then, I had created a ControlsOverlay.js for use with a Cocos2d-HTML5
 >   sample and have adapted that into *Freewill.js* for this release of
->   PeaksAndValleys.
+>   PeaksAndValleys. For a basic sample implementation, please see: https://github.com/oros/Freewill.js
 >   
 >   These new controls allow for multiple Joysticks and Buttons to be placed
 >   onscreen with the goal of simplicity and are not specific to WebGL applications.
