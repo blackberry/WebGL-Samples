@@ -25,7 +25,7 @@
 >   For more information on leveraging this tool, please refer to README.md in
 >   the tools/preprocessor folder.
 
-### Endless Terrain
+### Endless Terrain via Web Workers
 
 >   This release of PeaksAndValleys continuosly renders an area of 60 vertices
 >   in all directions around the camera's current position. The end result does
@@ -40,6 +40,10 @@
 >   When near the borders of the terrain / image, the Web Worker wraps around
 >   to retrieve information from the opposite end of the data to ensure the
 >   user can technically keep walking forever.
+>
+>   Future versions will focus around only loading those vertices that are
+>   within our field of view, allowing for more data to be processed in
+>   shorter amounts of time.
 
 ### Colour Shaders
 
@@ -72,7 +76,7 @@
 >   *virtualjoystick.js* was used as a basis for camera movement and rotation.
 >   Since then, I had created a ControlsOverlay.js for use with a Cocos2d-HTML5
 >   sample and have adapted that into *Freewill.js* for this release of
->   PeaksAndValleys. For a basic sample implementation, please see: https://github.com/oros/Freewill.js
+>   PeaksAndValleys. A sample implementation can be found here: https://github.com/oros/Freewill.js
 >   
 >   These new controls allow for multiple Joysticks and Buttons to be placed
 >   onscreen with the goal of simplicity and are not specific to WebGL applications.
